@@ -2,28 +2,42 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const hostname = '0.0.0.0'; // to accept connections from outside localhost
+const hostname = '0.0.0.0';
 const port = 3000;
 
-const server = http.createServer((req, res) => {
-  if (req.url === '/') { // Serve the home page, for example use '/about' to serve the about page
+function serveHTML (res, file_name) {
+    const file_path = path.join(__dirname, file_name);
 
-    const filePath = path.join(__dirname, 'home.html');
-
-    fs.readFile(filePath, (err, data) => {
-      if (err) {
-        res.statusCode = 500;
-        res.end('Error loading page');
-      } else {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/html');
-        res.end(data);
-      }
+    fs.readFile(file_path, (err, data) => {
+        if (err) {
+            res.statusCode = 500;
+            res.end('The server encountered an error.');
+        } else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(data);
+        } 
     });
-  } else {
-    res.statusCode = 404;
-    res.end('Not Found');
-  }
+}
+
+const server = http.createServer((req, res) => {
+    switch(req.url) {
+        case '/dashboard':
+            serveHTML(res, 'dashboard.html');
+            break;
+
+        case '/live-feed':
+            serveHTML(res, 'live_feed.html');
+            break;
+
+        case '/logs':
+            serveHTML(res, 'logs.html');
+            break;
+
+        default:
+            res.statusCode = 404;
+            res.end('Error 404: page not found.')
+    }
 });
 
 server.listen(port, hostname, () => {
