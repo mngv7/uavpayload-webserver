@@ -41,31 +41,6 @@ const webServer = http.createServer((req, res) => {
     }
 });
 
-function connectToPi(ip, socket_addr) {
-    let socket = new WebSocket(`ws://${ip}:${socket_addr}`);
-
-    socket.onmessage = (event) => {
-        console.log(`[MESSAGE] Received message: ${event.data}`);
-        // Code here to handle incoming messages
-    };
-
-    socket.onclose = (event) => {
-        if (event.wasClean) {
-            console.log('[INFO] Web socket closed.')
-        } else {
-            console.log(`[ERROR]: ${event}`);
-        }
-    };
-
-    socket.onopen = () => {
-        console.log(`[INFO] Connected to web socket ${ip}:${socket}`)
-    };
-
-    socket.onerror = (e) => {
-        console.log(`[ERROR] ${e}`);
-    };
-};
-
 webServer.listen(port, hostname, () => {
     console.log(`webServer running at http://${hostname}:${port}/`);
 });
