@@ -1,1 +1,0 @@
-# UAVPayload^{TAQ} Server Code

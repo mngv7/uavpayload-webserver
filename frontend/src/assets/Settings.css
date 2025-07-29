@@ -1,0 +1,22 @@
+button {
+    border: 2px solid #464646;
+    background-color: #464646;
+    color: #EAEAEA;
+    text-decoration: none;
+    cursor: pointer;
+
+    padding: 6px 12px;
+    border-radius: 7px;
+    display: inline-block;
+}
+
+input {
+    height: 20px;
+}
+
+.form-row {
+  display: flex;           /* Keep elements inline */
+  align-items: center;     /* Align vertically */
+  gap: 10px;               /* Space between input and button */
+  padding: 10px;           /* Outer padding around the row */
+}

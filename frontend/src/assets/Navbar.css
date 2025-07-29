@@ -1,0 +1,36 @@
+nav {
+  position: fixed;      /* Fixes the navbar relative to the viewport */
+  top: 0;               /* Stick to top edge */
+  left: 0;              /* Align left edge */
+  width: 100%;          /* Full width across the screen */
+  padding: 1rem;
+  background-color: #1E252B;
+  display: flex;
+  gap: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* optional shadow for separation */
+  z-index: 1000;        /* Make sure it’s on top of other content */
+}
+
+nav a {
+    border: 2px solid #464646;
+    background-color: #464646;
+    color: #EAEAEA;
+    text-decoration: none;
+    cursor: pointer;
+
+    padding: 6px 12px;
+    border-radius: 7px;
+    display: inline-block;
+}
+
+.settings-popup {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1100;
+}
