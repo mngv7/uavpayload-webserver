@@ -11,6 +11,11 @@ nav {
   z-index: 1000;        /* Make sure it’s on top of other content */
 }
 
+nav button {
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
 nav a {
     border: 2px solid #464646;
     background-color: #464646;

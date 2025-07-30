@@ -1,16 +1,9 @@
-import { Navbar } from '../components/Navbar';
-
-function App() {
+function Dashboard() {
   return (
-    <>
-      <Navbar />
-      {/* <Settings /> */}
-      <div style={{ paddingTop: '60px' }}>
-        {/* Your page content here */}
-        <h1>Welcome to the dashboard</h1>
-      </div>
-    </>
+    <div>
+        <h1>Dashboard</h1>
+    </div>
   );
 }
 
-export default App;
+export default Dashboard;

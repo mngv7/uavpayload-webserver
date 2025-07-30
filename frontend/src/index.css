@@ -35,16 +35,6 @@ h1 {
   line-height: 1.1;
 }
 
-input {
-  border: 2px solid #464646;
-  text-decoration: none;
-  cursor: pointer;
-
-  padding: 6px 12px;
-  border-radius: 7px;
-  display: inline-block;
-}
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
