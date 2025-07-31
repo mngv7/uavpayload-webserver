@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '../assets/Navbar.css';
-import { Settings } from './Settings';
+import Settings from './Settings';
 
 export function Navbar() {
   const [showSettings, setShowSettings] = useState(false);
