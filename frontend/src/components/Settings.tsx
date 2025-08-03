@@ -21,6 +21,7 @@ function Settings() {
                 socketNumber})
             });
             const data = await response.json();
+            console.log(data)
             if (data.message === 'WebSocket connection started.') {
                 setConnectionStatus(true);
                 setConnectedAddress(serverAddress);
