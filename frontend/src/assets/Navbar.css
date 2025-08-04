@@ -11,23 +11,36 @@ nav {
   z-index: 1000;        /* Make sure it’s on top of other content */
 }
 
+
 nav button {
   margin-left: auto;
   margin-right: 2rem;
 }
 
-nav a {
+/* Apply the same styles to both nav a and nav button */
+nav a,
+nav button {
     border: 2px solid #464646;
-    background-color: #464646;
-    color: #EAEAEA;
+    background-color: #161518;
+    color: #EAEAEA;       /* Initial text color (light gray) */
     text-decoration: none;
     cursor: pointer;
-
     padding: 6px 12px;
     border-radius: 7px;
-    display: inline-block;
+    display: inline-block;  /* Ensures the link behaves like a button */
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
+
+/* Define hover behavior to override browser default */
+nav a:hover, nav button:hover {
+    background-color: #333;  /* Darker gray for contrast */
+    color: #D3D3D3;         /* Lighter gray on hover, avoids blue */
+    border-color: #555;     /* Slightly darker border for depth */
+    transform: translateY(-1px);
+}
+
+/* Settings popup styling (unchanged, but can be enhanced similarly) */
 .settings-popup {
     position: absolute;
     top: 60px;
