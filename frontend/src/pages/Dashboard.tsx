@@ -68,50 +68,50 @@ function Dashboard() {
 
         {/* Temperature Card */}
         <div className="bg-blue-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-blue-800"><FaTemperatureHigh className="inline-block align-text-bottom mr-2" />Temperature:</h3>
+          <h3 className="text-lg font-semibold text-blue-800"><FaTemperatureHigh className="inline-block align-text-bottom mr-2" />  Temperature:</h3>
           <p className="text-lg font-bold text-blue-600 ml-auto">{sensorData.temperature} °C</p>
         </div>
 
         {/* CO2 Card */}
         <div className="bg-green-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-green-800"><FaCloud className="inline-block align-text-bottom mr-2" />CO2:</h3>
+          <h3 className="text-lg font-semibold text-green-800"><FaCloud className="inline-block align-text-bottom mr-2" />  CO2:</h3>
           <p className="text-lg font-bold text-green-600 ml-auto">{sensorData.co2} ppm</p>
         </div>
 
         {/* Humidity Card */}
         <div className="bg-teal-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-teal-800"><FaTint className="inline-block align-text-bottom mr-2" />Humidity:</h3>
+          <h3 className="text-lg font-semibold text-teal-800"><FaTint className="inline-block align-text-bottom mr-2" />  Humidity:</h3>
           <p className="text-lg font-bold text-teal-600 ml-auto">{sensorData.humidity} %</p>
         </div>
 
         {/* Air Pressure Card */}
         <div className="bg-purple-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-purple-800"><FaWind className="inline-block align-text-bottom mr-2" />Air Pressure:</h3>
+          <h3 className="text-lg font-semibold text-purple-800"><FaWind className="inline-block align-text-bottom mr-2" />  Air Pressure:</h3>
           <p className="text-lg font-bold text-purple-600 ml-auto">{sensorData.pressure} hPa</p>
         </div>
 
         {/* Light Intensity Card */}
         <div className="bg-yellow-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-yellow-800"><FaLightbulb className="inline-block align-text-bottom mr-2" />Light Intensity:</h3>
+          <h3 className="text-lg font-semibold text-yellow-800"><FaLightbulb className="inline-block align-text-bottom mr-2" />  Light Intensity:</h3>
           <p className="text-lg font-bold text-yellow-600 ml-auto">{sensorData.light} lx</p>
         </div>
 
         {/* Position Card */}
         <div className="bg-indigo-100 p-4 rounded-lg shadow-md flex flex-col items-start">
-          <h3 className="text-lg font-semibold text-indigo-800 mb-2"><FaMapMarkerAlt className="inline-block align-text-bottom mr-2" />Position:</h3>
-          <div className="w-full text-sm font-bold text-indigo-600 grid grid-cols-3 gap-x-4 gap-y-1">
-            <span>Lon: {sensorData.longitude}°</span>
-            <span>Lat: {sensorData.latitude}°</span>
-            <span>Alt: {sensorData.altitude} m</span>
-            <span>dx: {sensorData.dx} m</span>
-            <span>dy: {sensorData.dy} m</span>
-            <span>dz: {sensorData.dz} m</span>
+          <h3 className="text-lg font-semibold text-indigo-800 mb-2"><FaMapMarkerAlt className="inline-block align-text-bottom mr-2" />  Position:</h3>
+          <div className="w-full text-sm font-bold text-indigo-600 flex flex-col">
+            <p>Lon: {sensorData.longitude}°</p>
+            <p>Lat: {sensorData.latitude}°</p>
+            <p>Alt: {sensorData.altitude} m</p>
+            <p>dx: {sensorData.dx} m</p>
+            <p>dy: {sensorData.dy} m</p>
+            <p>dz: {sensorData.dz} m</p>
           </div>
         </div>
 
         {/* Drill Status Card */}
         <div className="bg-gray-200 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-gray-800"><FaTools className="inline-block align-text-bottom mr-2" />Drill Status:</h3>
+          <h3 className="text-lg font-semibold text-gray-800"><FaTools className="inline-block align-text-bottom mr-2" />  Drill Status:</h3>
           <div className="ml-auto flex items-center">
             <span className={`w-5 h-5 rounded-full ${sensorData.drill_status === 'ON' ? 'bg-green-500' : 'bg-red-500'}`}></span>
             <p className="ml-2 text-lg font-bold">{sensorData.drill_status}</p>
