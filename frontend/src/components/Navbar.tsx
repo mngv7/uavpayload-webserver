@@ -13,10 +13,10 @@ export function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <a href="/"><FaTachometerAlt />   Dashboard</a>
-        <a href="/live-feed"><FaVideo />   Live Feed</a>
-        <a href="/logs"><FaListAlt />   Logs</a>
-        <button onClick={() => setShowSettings(!showSettings)}><FaCog />   Settings</button>
+        <a href="/"><FaTachometerAlt />     Dashboard</a>
+        <a href="/live-feed"><FaVideo />     Live Feed</a>
+        <a href="/logs"><FaListAlt />     Logs</a>
+        <button onClick={() => setShowSettings(!showSettings)}><FaCog />     Settings</button>
       </nav>
 
       {showSettings && (
