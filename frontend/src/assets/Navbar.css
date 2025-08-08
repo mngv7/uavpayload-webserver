@@ -29,8 +29,46 @@ nav button {
     border-radius: 7px;
     display: inline-block;  /* Ensures the link behaves like a button */
     transition: color 0.3s ease, background-color 0.3s ease;
+    justify-content: start;
+    align-items: center;
+}
+/* 
+
+@property --deg{
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0deg;
 }
 
+nav a::before, nav button::before {
+    content: '';
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background: conic-gradient(
+      from var(--deg) at center,
+      #1E252B,
+      #2072b9,
+      #8c72c1,
+      #d82e83,
+    );
+    border-radius: inherit;
+    animation: autoRotate 10s linear infinite;
+}
+
+nav a::after, nav button::after {
+    filter: blur(10px);
+    content: '';
+}
+
+@keyframes autoRotate {
+    from {
+        --deg: 0deg;
+    }
+    to {
+        --deg: 360deg;
+    }
+} */
 
 /* Define hover behavior to override browser default */
 nav a:hover, nav button:hover {
