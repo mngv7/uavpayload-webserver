@@ -5,7 +5,7 @@ body {
 }
 
 h1 {
-  color: #1e40af;
+  color: #929fc2;
   flex: 1 1 auto; /* Allow h1 to grow and shrink */ 
 }
 
@@ -14,6 +14,6 @@ h1 {
 }
 
 .bg-blue-100:hover, .bg-green-100:hover, .bg-teal-100:hover, .bg-purple-100:hover, .bg-yellow-100:hover, .bg-indigo-100:hover, .bg-gray-100:hover {
-  transform: scale(1.02);
+  transform: scale(1.002);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
