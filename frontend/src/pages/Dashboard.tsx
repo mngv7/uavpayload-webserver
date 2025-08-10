@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import '../assets/Dashboard.css';
 import { FaTemperatureHigh, FaCloud, FaTint, FaWind, FaLightbulb, FaMapMarkerAlt, FaTools } from 'react-icons/fa';
 
-// Define the shape of the sensor data
 interface SensorData {
   timestamp: string;
   temperature: number;
@@ -33,94 +32,121 @@ function Dashboard() {
     dx: '0.0',
     dy: '0.0',
     dz: '0.0',
-    drill_status: 'OFF'
+    drill_status: 'OFF',
   });
 
+  const [videoSrc, setVideoSrc] = useState<string>('');
+
+  // resolve host/scheme so it works over http/https and localhost/LAN
+  const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const scheme = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss' : 'ws';
+
+  // Sensor websocket (8765)
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8765');
-
-    ws.onopen = () => {
-      console.log('Connected to WebSocket');
-    };
-
+    const ws = new WebSocket(`ws://${host}:8765`);
+    ws.onopen = () => console.log('Sensor WS connected');
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setSensorData(data);
+      try {
+        const data = JSON.parse(event.data);
+        setSensorData(data);
+      } catch (e) {
+        console.error('Sensor WS parse error:', e);
+      }
     };
+    ws.onerror = (err) => console.error('Sensor WS error:', err);
+    ws.onclose = () => console.log('Sensor WS disconnected');
+    return () => ws.close();
+  }, [host]);
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+  // Video websocket (8766) — single, scheme-aware
+  useEffect(() => {
+    const url = `${scheme}://${host}:8766`;
+    const vws = new WebSocket(url);
+    vws.onopen = () => console.log('Video WS connected to', url);
+    vws.onmessage = (event) => {
+      setVideoSrc(`data:image/jpeg;base64,${event.data}`);
     };
-
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
-
-    return () => {
-      ws.close();
-    };
-  }, []);
+    vws.onerror = (err) => console.error('Video WS error:', err);
+    vws.onclose = () => console.log('Video WS disconnected');
+    return () => vws.close();
+  }, [host, scheme]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold mb-4">UAV Monitoring Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">UAV Monitoring Dashboard</h1>
 
-        {/* Temperature Card */}
-        <div className="bg-blue-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-blue-800"><FaTemperatureHigh className="inline-block align-text-bottom mr-2" />  Temperature:</h3>
-          <p className="text-lg font-bold text-blue-600 ml-auto">{sensorData.temperature} °C</p>
+        {/* Custom CSS grid -> 1 col on mobile, 3 cols (3/6/3) from 768px */}
+        <div className="dashboard-grid">
+          {/* Left: SENSOR CONTAINER */}
+          <aside className="sensor-panel">
+            <h2 className="panel-title">Sensors</h2>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaTemperatureHigh className="mr-2" /> Temperature</div>
+              <div className="metric-value">{sensorData.temperature} °C</div>
+            </div>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaCloud className="mr-2" /> CO2</div>
+              <div className="metric-value">{sensorData.co2} ppm</div>
+            </div>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaTint className="mr-2" /> Humidity</div>
+              <div className="metric-value">{sensorData.humidity} %</div>
+            </div>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaWind className="mr-2" /> Air Pressure</div>
+              <div className="metric-value">{sensorData.pressure} hPa</div>
+            </div>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaLightbulb className="mr-2" /> Light</div>
+              <div className="metric-value">{sensorData.light} lx</div>
+            </div>
+
+            <div className="metric-block">
+              <div className="metric-label mb-2"><FaMapMarkerAlt className="mr-2" /> Position</div>
+              <div className="metric-subrow">
+                {/* <p>Lon: {sensorData.longitude}°</p>
+                <p>Lat: {sensorData.latitude}°</p>
+                <p>Alt: {sensorData.altitude} m</p> */}
+                <p>dx: {sensorData.dx} m</p>
+                <p>dy: {sensorData.dy} m</p>
+                <p>dz: {sensorData.dz} m</p>
+              </div>
+            </div>
+
+            <div className="metric-row">
+              <div className="metric-label"><FaTools className="mr-2" /> Drill Status</div>
+              <div className="metric-value">
+                <span className={`dot ${sensorData.drill_status === 'ON' ? 'dot-on' : 'dot-off'}`} />
+                <span className="ml-2 font-bold">{sensorData.drill_status}</span>
+              </div>
+            </div>
+
+            <div className="last-update">Last Update: {sensorData.timestamp || 'Waiting for data...'}</div>
+          </aside>
+
+          {/* Centre: VIDEO (centred) */}
+          <section className="video-column">
+            <div className="video-box">
+              {videoSrc ? (
+                <img src={videoSrc} alt="Live feed" />
+              ) : (
+                <p className="text-white p-4">Waiting for video…</p>
+              )}
+            </div>
+          </section>
+
+          {/* Right: CONTROLS / LOGS */}
+          <aside className="controls-panel">
+            <h2 className="panel-title">Controls / Logs</h2>
+            <p className="text-sm text-gray-600">Add charts, logs, or controls here.</p>
+          </aside>
         </div>
-
-        {/* CO2 Card */}
-        <div className="bg-green-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-green-800"><FaCloud className="inline-block align-text-bottom mr-2" />  CO2:</h3>
-          <p className="text-lg font-bold text-green-600 ml-auto">{sensorData.co2} ppm</p>
-        </div>
-
-        {/* Humidity Card */}
-        <div className="bg-teal-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-teal-800"><FaTint className="inline-block align-text-bottom mr-2" />  Humidity:</h3>
-          <p className="text-lg font-bold text-teal-600 ml-auto">{sensorData.humidity} %</p>
-        </div>
-
-        {/* Air Pressure Card */}
-        <div className="bg-purple-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-purple-800"><FaWind className="inline-block align-text-bottom mr-2" />  Air Pressure:</h3>
-          <p className="text-lg font-bold text-purple-600 ml-auto">{sensorData.pressure} hPa</p>
-        </div>
-
-        {/* Light Intensity Card */}
-        <div className="bg-yellow-100 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-yellow-800"><FaLightbulb className="inline-block align-text-bottom mr-2" />  Light Intensity:</h3>
-          <p className="text-lg font-bold text-yellow-600 ml-auto">{sensorData.light} lx</p>
-        </div>
-
-        {/* Position Card */}
-        <div className="bg-indigo-100 p-4 rounded-lg shadow-md flex flex-col items-start">
-          <h3 className="text-lg font-semibold text-indigo-800 mb-2"><FaMapMarkerAlt className="inline-block align-text-bottom mr-2" />  Position:</h3>
-          <div className="w-full text-sm font-bold text-indigo-600 flex flex-col">
-            <p>Lon: {sensorData.longitude}°</p>
-            <p>Lat: {sensorData.latitude}°</p>
-            <p>Alt: {sensorData.altitude} m</p>
-            <p>dx: {sensorData.dx} m</p>
-            <p>dy: {sensorData.dy} m</p>
-            <p>dz: {sensorData.dz} m</p>
-          </div>
-        </div>
-
-        {/* Drill Status Card */}
-        <div className="bg-gray-200 p-4 rounded-lg shadow-md flex items-center">
-          <h3 className="text-lg font-semibold text-gray-800"><FaTools className="inline-block align-text-bottom mr-2" />  Drill Status:</h3>
-          <div className="ml-auto flex items-center">
-            <span className={`w-5 h-5 rounded-full ${sensorData.drill_status === 'ON' ? 'bg-green-500' : 'bg-red-500'}`}></span>
-            <p className="ml-2 text-lg font-bold">{sensorData.drill_status}</p>
-          </div>
-        </div>
-
-      </div>
-      <div className="mt-4 text-gray-600">
-        Last Update: {sensorData.timestamp || 'Waiting for data...'}
       </div>
     </div>
   );
