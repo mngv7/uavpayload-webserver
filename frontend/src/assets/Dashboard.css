@@ -1,0 +1,13 @@
+.gauges-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 0;
+  justify-content: flex-start;
+}
+
+.gauges-cluster > * {
+  flex: 1 1 220px; /* grow/shrink with base 220px */
+  max-width: 100%;
+  box-sizing: border-box;
+}

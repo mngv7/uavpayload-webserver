@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.sensor-reading-container {
+  background: #e1e1e1;
+  width: 850px;
+  border-radius: 15px;
+}
+.gauge-and-graph {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.gauge {
+  width: 300px;
+  height: auto;
+}
+.graph {
+  width: 100px;
+  height: auto;
+}
+
+h1 {
+  padding-left: 10px;
+  color: black;
+  font-family: 'Segoe UI', sans-serif;
+}
