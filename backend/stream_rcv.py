@@ -14,8 +14,8 @@ import websockets
 import base64
 import threading
 
-WS_HOST = "0.0.0.0"
-WS_PORT = 8766
+WS_HOST = os.getenv("VIDEO_WS_HOST", "0.0.0.0")
+WS_PORT = int(os.getenv("VIDEO_WS_PORT", "8766"))
 _ws_clients = set()
 _ws_loop = None  # will hold the running loop used by the WS server
 
@@ -53,56 +53,56 @@ def send_frame_to_frontend(frame_bgr):
     b64 = base64.b64encode(buf).decode("ascii")
     asyncio.run_coroutine_threadsafe(_ws_broadcast_b64(b64), _ws_loop)
 
-# -------------------- Roboflow model --------------------
-MODEL_ID = os.getenv("ROBOFLOW_MODEL_ID", "guages-t6e81/4")
-API_KEY  = os.getenv("ROBOFLOW_API_KEY", "9vpbvmbC7lEZ7Q36n4xD")
-model = get_model(MODEL_ID, api_key=API_KEY)
+# # -------------------- Roboflow model --------------------
+# MODEL_ID = os.getenv("ROBOFLOW_MODEL_ID", "guages-t6e81/4")
+# API_KEY  = os.getenv("ROBOFLOW_API_KEY", "9vpbvmbC7lEZ7Q36n4xD")
+# model = get_model(MODEL_ID, api_key=API_KEY)
 
-# -------------------- Gauge mapping config --------------------
-SWEEP_DEG = 300.0             # usable sweep from 0-ref (green) to full scale (deg)
-FULL_SCALE_BAR = 10.0         # full-scale pressure (bar)
-SMOOTH_ALPHA = 0.2            # 0..1 (higher = snappier)
+# # -------------------- Gauge mapping config --------------------
+# SWEEP_DEG = 300.0             # usable sweep from 0-ref (green) to full scale (deg)
+# FULL_SCALE_BAR = 10.0         # full-scale pressure (bar)
+# SMOOTH_ALPHA = 0.2            # 0..1 (higher = snappier)
 
-angle_smooth = None
-pressure_smooth = None
+# angle_smooth = None
+# pressure_smooth = None
 
-ANG_THRESHOLD_DEG = 14  # threshold to avoid jitter around 0-ref
+# ANG_THRESHOLD_DEG = 14  # threshold to avoid jitter around 0-ref
 
-# Angles from 0-ref -> tip
-def compute_angles_from_zero(p_centre, p_zero, p_tip):
-    """
-    Returns (cw_deg, ccw_deg) from 0-ref to needle tip.
-    Image coords: x right, y down => arctan2 angles increase clockwise.
-    """
-    c = np.array(p_centre, dtype=float)
-    z = np.array(p_zero,   dtype=float)
-    t = np.array(p_tip,    dtype=float)
-    a0 = np.degrees(np.arctan2(z[1]-c[1], z[0]-c[0])) % 360.0
-    at = np.degrees(np.arctan2(t[1]-c[1], t[0]-c[0])) % 360.0 + ANG_THRESHOLD_DEG
-    cw  = (at - a0) % 360.0           # clockwise from zero -> tip
-    ccw = (a0 - at) % 360.0           # = 360 - cw
-    return cw, ccw
+# # Angles from 0-ref -> tip
+# def compute_angles_from_zero(p_centre, p_zero, p_tip):
+#     """
+#     Returns (cw_deg, ccw_deg) from 0-ref to needle tip.
+#     Image coords: x right, y down => arctan2 angles increase clockwise.
+#     """
+#     c = np.array(p_centre, dtype=float)
+#     z = np.array(p_zero,   dtype=float)
+#     t = np.array(p_tip,    dtype=float)
+#     a0 = np.degrees(np.arctan2(z[1]-c[1], z[0]-c[0])) % 360.0
+#     at = np.degrees(np.arctan2(t[1]-c[1], t[0]-c[0])) % 360.0 + ANG_THRESHOLD_DEG
+#     cw  = (at - a0) % 360.0           # clockwise from zero -> tip
+#     ccw = (a0 - at) % 360.0           # = 360 - cw
+#     return cw, ccw
 
-def to_pressure_bar(cw_angle_deg: float) -> float:
-    # Clamp to usable sweep then map linearly to bar
-    a = max(0.0, min(cw_angle_deg, SWEEP_DEG))
-    return (a / SWEEP_DEG) * FULL_SCALE_BAR
+# def to_pressure_bar(cw_angle_deg: float) -> float:
+#     # Clamp to usable sweep then map linearly to bar
+#     a = max(0.0, min(cw_angle_deg, SWEEP_DEG))
+#     return (a / SWEEP_DEG) * FULL_SCALE_BAR
 
-def kp_label(k):
-    return getattr(k, "class_name", None) or getattr(k, "label", None) or getattr(k, "name", None)
+# def kp_label(k):
+#     return getattr(k, "class_name", None) or getattr(k, "label", None) or getattr(k, "name", None)
 
-def canonicalise_label(lbl: str):
-    if not lbl:
-        return None
-    l = lbl.strip().lower()
-    if l in ("center", "centre"): return "centre"
-    if l in ("0-ref", "0_ref", "zero", "0"): return "zero"
-    if l in ("tip", "needle_tip"): return "tip"
-    return None
+# def canonicalise_label(lbl: str):
+#     if not lbl:
+#         return None
+#     l = lbl.strip().lower()
+#     if l in ("center", "centre"): return "centre"
+#     if l in ("0-ref", "0_ref", "zero", "0"): return "zero"
+#     if l in ("tip", "needle_tip"): return "tip"
+#     return None
 
 # -------------------- UDP receive (chunked) --------------------
-LISTEN_IP = "127.0.0.1"
-LISTEN_PORT = 5000
+LISTEN_IP = os.getenv("VIDEO_UDP_HOST", "127.0.0.1")
+LISTEN_PORT = int(os.getenv("VIDEO_UDP_PORT", "5000"))
 BUFSIZE = 65536
 HEADER_STRUCT = struct.Struct("!IHH")  # frame_id(uint32), total_chunks(uint16), chunk_idx(uint16)
 SOCKET_TIMEOUT = 2.0
@@ -171,71 +171,6 @@ try:
             frame = cv2.imdecode(np.frombuffer(jpeg_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
             if frame is None:
                 continue
-
-            # -------- Inference & overlay --------
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            try:
-                resp_list = model.infer(rgb, confidence=0.3)
-            except Exception as e:
-                cv2.putText(frame, f"infer err: {e}", (10, 60),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-                resp_list = []
-
-            if resp_list:
-                resp = resp_list[0]
-                preds = resp.predictions
-                if preds:
-                    pred = max(preds, key=lambda p: p.confidence)
-
-                    kpd = {}
-                    for k in pred.keypoints:
-                        nm = canonicalise_label(kp_label(k))
-                        if nm:
-                            kpd[nm] = (k.x, k.y, k.confidence)
-
-                    if all(n in kpd for n in ("centre", "zero", "tip")):
-                        centre = (kpd["centre"][0], kpd["centre"][1])
-                        zero   = (kpd["zero"][0],   kpd["zero"][1])
-                        tip    = (kpd["tip"][0],    kpd["tip"][1])
-
-                        # draw points/arms
-                        for p, col in [(centre, (0, 255, 255)), (zero, (0, 255, 0)), (tip, (0, 0, 255))]:
-                            cv2.circle(frame, (int(p[0]), int(p[1])), 6, col, -1)
-                        cv2.line(frame, tuple(map(int, centre)), tuple(map(int, zero)), (0, 255, 0), 2)
-                        cv2.line(frame, tuple(map(int, centre)), tuple(map(int, tip)),  (0, 0, 255), 2)
-
-                        # angles & pressure (DISPLAY = CW as requested)
-                        cw_deg, ccw_deg = compute_angles_from_zero(centre, zero, tip)
-                        angle_display_deg = cw_deg                 # display clockwise
-                        pressure_bar = to_pressure_bar(cw_deg)     # map CW sweep to bar
-
-                        # EMA smoothing
-                        if angle_smooth is None:
-                            angle_smooth = angle_display_deg
-                            pressure_smooth = pressure_bar
-                        else:
-                            angle_smooth = (1 - SMOOTH_ALPHA) * angle_smooth + SMOOTH_ALPHA * angle_display_deg
-                            pressure_smooth = (1 - SMOOTH_ALPHA) * pressure_smooth + SMOOTH_ALPHA * pressure_bar
-
-                        cv2.putText(frame, f"Angle: {angle_smooth:6.2f} deg", (10, 90),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
-                        cv2.putText(frame, f"Pressure: {pressure_smooth:4.2f} bar", (10, 125),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
-
-                        # warn if CW angle outside usable sweep
-                        if cw_deg > SWEEP_DEG + 3:
-                            cv2.putText(frame, "Out of sweep", (10, 160),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-                    else:
-                        missing = [n for n in ("centre", "zero", "tip") if n not in kpd]
-                        cv2.putText(frame, f"Missing KP(s): {', '.join(missing)}",
-                                    (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-                else:
-                    cv2.putText(frame, "No gauge detected", (10, 90),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-            else:
-                cv2.putText(frame, "No response from model", (10, 90),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
             # -------- FPS & display --------
             recv_count += 1

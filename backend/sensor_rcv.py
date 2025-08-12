@@ -3,14 +3,15 @@ import websockets
 import socket
 import json
 import threading
+import os
 
-# WebSocket server settings
-WS_HOST = 'localhost'
-WS_PORT = 8765
+# WebSocket server settings (override via env)
+WS_HOST = os.getenv('SENSOR_WS_HOST', 'localhost')
+WS_PORT = int(os.getenv('SENSOR_WS_PORT', '8765'))
 
-# UDP server settings
-UDP_HOST = '127.0.0.1'
-UDP_PORT = 6001
+# UDP server settings (override via env)
+UDP_HOST = os.getenv('SENSOR_UDP_HOST', '127.0.0.1')
+UDP_PORT = int(os.getenv('SENSOR_UDP_PORT', '6001'))
 
 # Set of connected WebSocket clients
 clients = set()
