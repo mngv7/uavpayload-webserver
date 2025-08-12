@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import '../assets/Settings.css'
 import ConnectionStatus from './ConnectionStatus';
+import { connectToWebsocket } from '../services/api';
 
 function Settings() {
     const [serverAddress, setServerAddress] = useState('');
@@ -11,16 +12,7 @@ function Settings() {
 
     const handleConnect = async () => {
         try {
-            const response = await fetch('http://localhost:5000/connect', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                serverAddress,
-                socketNumber})
-            });
-            const data = await response.json();
+            const data = await connectToWebsocket({ serverAddress, socketNumber });
             if (data.message === 'WebSocket connection started.') {
                 setConnectionStatus(true);
                 setConnectedAddress(serverAddress);

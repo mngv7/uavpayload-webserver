@@ -3,8 +3,25 @@ import '../assets/Dashboard.css';
 import { useEffect, useState } from "react";
 import { getSensorReadings } from "../services/api";
 
+interface SensorData {
+  timestamp: string;
+  temperature: number;
+  co2: number;
+  humidity: number;
+  pressure: number;
+  light: number;
+  longitude: string;
+  latitude: string;
+  altitude: string;
+  dx: string;
+  dy: string;
+  dz: string;
+  drill_status: string;
+}
+
+
 function Dashboard() {
-  const [sensorData, setSensorData] = useState(null);
+  const [sensorData, setSensorData] = useState<SensorData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,16 +60,16 @@ function Dashboard() {
       </>
     )
   }
-  
+
   return (
     <div>
       <h1>Dashboard</h1>
       <div className="gauges-cluster">
-        <SensorReading sensorType="Temperature" sensorReading={20} gaugeUpper={40} gaugeLower={0} />
-        <SensorReading sensorType="Atmospheric Pressure" sensorReading={24} gaugeUpper={40} gaugeLower={0} />
-        <SensorReading sensorType="Humidity" sensorReading={70} gaugeUpper={100} gaugeLower={0} />
-        <SensorReading sensorType="Light" sensorReading={12} gaugeUpper={40} gaugeLower={0} />
-        <SensorReading sensorType="Gas Sensors" sensorReading={35} gaugeUpper={40} gaugeLower={0} />
+        <SensorReading sensorType="Temperature" sensorReading={sensorData.temperature} gaugeUpper={40} gaugeLower={0} />
+        <SensorReading sensorType="Atmospheric Pressure" sensorReading={sensorData.pressure} gaugeUpper={40} gaugeLower={0} />
+        <SensorReading sensorType="Humidity" sensorReading={sensorData.humidity} gaugeUpper={100} gaugeLower={0} />
+        <SensorReading sensorType="Light" sensorReading={sensorData.light} gaugeUpper={40} gaugeLower={0} />
+        <SensorReading sensorType="Gas Sensors" sensorReading={sensorData.co2} gaugeUpper={40} gaugeLower={0} />
       </div>
     </div>
   );
