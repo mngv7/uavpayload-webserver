@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../assets/Dashboard.css';
 import { FaTemperatureHigh, FaCloud, FaTint, FaWind, FaLightbulb, FaMapMarkerAlt, FaTools } from 'react-icons/fa';
 
@@ -72,81 +72,78 @@ function Dashboard() {
   }, [host, scheme]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">UAV Monitoring Dashboard</h1>
+    <div className="page-wrap">
+      <section className="hero">
+        <h1 className="hero-title">UAV Monitoring Dashboard</h1>
+        <p className="hero-subtitle">Live telemetry, video feed, and system status.</p>
+      </section>
 
-        {/* Custom CSS grid -> 1 col on mobile, 3 cols (3/6/3) from 768px */}
-        <div className="dashboard-grid">
-          {/* Left: SENSOR CONTAINER */}
-          <aside className="sensor-panel">
-            <h2 className="panel-title">Sensors</h2>
+      <div className="dashboard-grid">
+        {/* Left: SENSOR CONTAINER */}
+        <aside className="sensor-panel">
+          <h2 className="panel-title">Sensors</h2>
 
-            <div className="metric-row">
-              <div className="metric-label"><FaTemperatureHigh className="mr-2" /> Temperature</div>
-              <div className="metric-value">{sensorData.temperature} °C</div>
+          <div className="metric-row">
+            <div className="metric-label"><FaTemperatureHigh style={{ marginRight: 8 }} /> Temperature</div>
+            <div className="metric-value">{sensorData.temperature} °C</div>
+          </div>
+
+          <div className="metric-row">
+            <div className="metric-label"><FaCloud style={{ marginRight: 8 }} /> CO2</div>
+            <div className="metric-value">{sensorData.co2} ppm</div>
+          </div>
+
+          <div className="metric-row">
+            <div className="metric-label"><FaTint style={{ marginRight: 8 }} /> Humidity</div>
+            <div className="metric-value">{sensorData.humidity} %</div>
+          </div>
+
+          <div className="metric-row">
+            <div className="metric-label"><FaWind style={{ marginRight: 8 }} /> Air Pressure</div>
+            <div className="metric-value">{sensorData.pressure} hPa</div>
+          </div>
+
+          <div className="metric-row">
+            <div className="metric-label"><FaLightbulb style={{ marginRight: 8 }} /> Light</div>
+            <div className="metric-value">{sensorData.light} lx</div>
+          </div>
+
+          <div className="metric-block">
+            <div className="metric-label" style={{ marginBottom: 8 }}><FaMapMarkerAlt style={{ marginRight: 8 }} /> Position</div>
+            <div className="metric-subrow">
+              <p>dx: {sensorData.dx} m</p>
+              <p>dy: {sensorData.dy} m</p>
+              <p>dz: {sensorData.dz} m</p>
             </div>
+          </div>
 
-            <div className="metric-row">
-              <div className="metric-label"><FaCloud className="mr-2" /> CO2</div>
-              <div className="metric-value">{sensorData.co2} ppm</div>
+          <div className="metric-row">
+            <div className="metric-label"><FaTools style={{ marginRight: 8 }} /> Drill Status</div>
+            <div className="metric-value">
+              <span className={`dot ${sensorData.drill_status === 'ON' ? 'dot-on' : 'dot-off'}`} />
+              <span style={{ marginLeft: 8, fontWeight: 700 }}>{sensorData.drill_status}</span>
             </div>
+          </div>
 
-            <div className="metric-row">
-              <div className="metric-label"><FaTint className="mr-2" /> Humidity</div>
-              <div className="metric-value">{sensorData.humidity} %</div>
-            </div>
+          <div className="last-update">Last Update: {sensorData.timestamp || 'Waiting for data...'}</div>
+        </aside>
 
-            <div className="metric-row">
-              <div className="metric-label"><FaWind className="mr-2" /> Air Pressure</div>
-              <div className="metric-value">{sensorData.pressure} hPa</div>
-            </div>
+        {/* Centre: VIDEO (centred) */}
+        <section className="video-column">
+          <div className="video-box">
+            {videoSrc ? (
+              <img src={videoSrc} alt="Live feed" />
+            ) : (
+              <p style={{ color: '#fff', padding: '1rem' }}>Waiting for video…</p>
+            )}
+          </div>
+        </section>
 
-            <div className="metric-row">
-              <div className="metric-label"><FaLightbulb className="mr-2" /> Light</div>
-              <div className="metric-value">{sensorData.light} lx</div>
-            </div>
-
-            <div className="metric-block">
-              <div className="metric-label mb-2"><FaMapMarkerAlt className="mr-2" /> Position</div>
-              <div className="metric-subrow">
-                {/* <p>Lon: {sensorData.longitude}°</p>
-                <p>Lat: {sensorData.latitude}°</p>
-                <p>Alt: {sensorData.altitude} m</p> */}
-                <p>dx: {sensorData.dx} m</p>
-                <p>dy: {sensorData.dy} m</p>
-                <p>dz: {sensorData.dz} m</p>
-              </div>
-            </div>
-
-            <div className="metric-row">
-              <div className="metric-label"><FaTools className="mr-2" /> Drill Status</div>
-              <div className="metric-value">
-                <span className={`dot ${sensorData.drill_status === 'ON' ? 'dot-on' : 'dot-off'}`} />
-                <span className="ml-2 font-bold">{sensorData.drill_status}</span>
-              </div>
-            </div>
-
-            <div className="last-update">Last Update: {sensorData.timestamp || 'Waiting for data...'}</div>
-          </aside>
-
-          {/* Centre: VIDEO (centred) */}
-          <section className="video-column">
-            <div className="video-box">
-              {videoSrc ? (
-                <img src={videoSrc} alt="Live feed" />
-              ) : (
-                <p className="text-white p-4">Waiting for video…</p>
-              )}
-            </div>
-          </section>
-
-          {/* Right: CONTROLS / LOGS */}
-          <aside className="controls-panel">
-            <h2 className="panel-title">Controls / Logs</h2>
-            <p className="text-sm text-gray-600">Add charts, logs, or controls here.</p>
-          </aside>
-        </div>
+        {/* Right: CONTROLS / LOGS */}
+        <aside className="controls-panel">
+          <h2 className="panel-title">Controls / Logs</h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>Add charts, logs, or controls here.</p>
+        </aside>
       </div>
     </div>
   );

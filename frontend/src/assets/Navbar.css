@@ -1,36 +1,77 @@
-nav {
-  position: fixed;      /* Fixes the navbar relative to the viewport */
-  top: 0;               /* Stick to top edge */
-  left: 0;              /* Align left edge */
-  width: 100%;          /* Full width across the screen */
-  padding: 1rem;
-  background-color: #1E252B;
+/* Top navigation styled similar to a clean corporate header */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar .nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* optional shadow for separation */
-  z-index: 1000;        /* Make sure it’s on top of other content */
+  padding: 0.75rem 1rem;
 }
 
-
-nav button {
-  margin-left: auto;
-  margin-right: 2rem;
+.navbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
-/* Apply the same styles to both nav a and nav button */
-nav a,
-nav button {
-    border: 2px solid #464646;
-    background-color: #161518;
-    color: #EAEAEA;       /* Initial text color (light gray) */
-    text-decoration: none;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 7px;
-    display: inline-block;  /* Ensures the link behaves like a button */
-    transition: color 0.3s ease, background-color 0.3s ease;
-    justify-content: start;
-    align-items: center;
+.navbar .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar a {
+  color: var(--text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  position: relative;
+}
+
+.navbar a:hover {
+  color: var(--primary);
+}
+
+.navbar a::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 6px;
+  height: 2px;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.navbar a:hover::after {
+  background: var(--accent);
+}
+
+.navbar button {
+  margin-left: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar button:hover {
+  border-color: var(--accent);
+  color: var(--primary);
 }
 /* 
 
@@ -70,23 +111,15 @@ nav a::after, nav button::after {
     }
 } */
 
-/* Define hover behavior to override browser default */
-nav a:hover, nav button:hover {
-    background-color: #333;  /* Darker gray for contrast */
-    color: #D3D3D3;         /* Lighter gray on hover, avoids blue */
-    border-color: #555;     /* Slightly darker border for depth */
-    transform: translateY(-1px);
-}
-
-/* Settings popup styling (unchanged, but can be enhanced similarly) */
+/* Settings popup */
 .settings-popup {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background: #fff;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    z-index: 1100;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  z-index: 1100;
 }

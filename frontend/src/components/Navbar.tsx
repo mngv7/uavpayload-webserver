@@ -2,10 +2,7 @@ import { useState } from 'react';
 import '../assets/Navbar.css';
 import Settings from './Settings';
 
-import {
-  FaTachometerAlt, FaVideo, FaListAlt, FaCog
-} from 'react-icons/fa';
-// FaFlask, FaThermometerHalf, FaTint, FaMapMarkerAlt, FaQrcode, FaDrill, FaDrone,
+import { FaTachometerAlt, FaVideo, FaListAlt, FaCog } from 'react-icons/fa';
 
 export function Navbar() {
   const [showSettings, setShowSettings] = useState(false);
@@ -13,10 +10,25 @@ export function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <a href="/"><FaTachometerAlt />     Dashboard</a>
-        <a href="/live-feed"><FaVideo />     Live Feed</a>
-        <a href="/logs"><FaListAlt />     Logs</a>
-        <button onClick={() => setShowSettings(!showSettings)}><FaCog />     Settings</button>
+        <div className="nav-inner">
+          <a className="brand" href="/">
+            UAV Payload
+          </a>
+          <div className="nav-links">
+            <a href="/">
+              <FaTachometerAlt style={{ marginRight: 6 }} /> Dashboard
+            </a>
+            <a href="/live-feed">
+              <FaVideo style={{ marginRight: 6 }} /> Live Feed
+            </a>
+            <a href="/logs">
+              <FaListAlt style={{ marginRight: 6 }} /> Logs
+            </a>
+            <button onClick={() => setShowSettings(!showSettings)}>
+              <FaCog style={{ marginRight: 6 }} /> Settings
+            </button>
+          </div>
+        </div>
       </nav>
 
       {showSettings && (
